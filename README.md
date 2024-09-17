@@ -6,6 +6,7 @@ Original - https://github.com/MadStudioRoblox/ProfileService
 
 # Code
 ```lua
+--//ProfileService.Lua
 -- Fires MadworkSignal instance every time a value is changed
 local function MonitorTable(tbl, path, signal)
 	local newTable = {}
@@ -59,6 +60,7 @@ end
 # Example Usage
 
 ```lua
+--//ExampleService.lua
 function ExampleService:InitializeDataListener(player) -- Should only be called once per session
     local profile = self:GetProfileRef(player)
     self.LiveProfiles[player].Events["DataChange"] = profile:ListenToDataChange(function(...) -- 
@@ -66,9 +68,9 @@ function ExampleService:InitializeDataListener(player) -- Should only be called 
     end)
 end
 
-function DataService:LoadPlayerProfile(player) 
+function ExampleService:LoadPlayerProfile(player) 
     local ProfileStore = self.Stores["PlayerData"]
-    local profile = ProfileStore:LoadProfileAsync(DATA_PREFIX .. player.UserId)
+    local profile = ProfileStore:LoadProfileAsync(DATA_PREFIX .. player.UserId) -- DATA_PREFIX is arbitrary string, i.e whatever you want to prefix the Profile's ID with
     if (profile) then
         profile:AddUserId(player.UserId)
         profile:Reconcile()
@@ -81,7 +83,7 @@ function DataService:LoadPlayerProfile(player)
                 Object = profile,
                 Events = {}
             }
-            --Initialize PlayerData
+            --Initialize PlayerData Listener
             self:InitializeDataListener(player)
         else
             profile:Release()
@@ -96,5 +98,13 @@ function DataService:LoadPlayerProfile(player)
             error "Profile not loaded, returned nil"
         end
     end}
+end
+
+function ExampleService:InitStores()
+    --// PlayerData
+    self.Stores["PlayerData"] = ProfileService.GetProfileStore(
+        "PlayerDataNew",
+        PlayerTemplate
+    )
 end
 ```
